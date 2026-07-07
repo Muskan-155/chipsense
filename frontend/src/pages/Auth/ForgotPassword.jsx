@@ -5,33 +5,23 @@ import Button from "../../components/ui/Button";
 import Loader from "../../components/ui/Loader";
 import api from "../../services/api";
 
-function Login() {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleForgotPassword = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
-      const response = await api.post("/auth/login", {
+      const response = await api.post("/auth/forgot-password", {
         email,
-        password,
       });
 
-      console.log("Login Success:", response.data);
-
-      alert("🎉 Login Successful!");
-
-      // We'll save the JWT token tomorrow
+      alert(response.data.message || "Reset link sent successfully!");
     } catch (error) {
-      console.error(error);
-
-      alert(
-        error.response?.data?.message || "Login Failed!"
-      );
+      alert(error.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -39,19 +29,16 @@ function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-white to-green-100 px-4">
-
       <Card className="w-full max-w-md">
-
-        <h1 className="text-4xl font-bold text-center text-purple-700">
-          Hello, Tun-Tun! 🍃
+        <h1 className="text-3xl font-bold text-center text-purple-700">
+          Forgot Password
         </h1>
 
         <p className="text-center text-gray-500 mt-2 mb-8">
-          Welcome back to ChipSense
+          Enter your email to receive a password reset link.
         </p>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-
+        <form onSubmit={handleForgotPassword} className="space-y-5">
           <Input
             type="email"
             name="email"
@@ -60,25 +47,14 @@ function Login() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <Input
-            type="password"
-            name="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
           {loading ? (
             <Loader />
           ) : (
-            <Button text="Login" type="submit" />
+            <Button text="Send Reset Link" type="submit" />
           )}
-
         </form>
-
       </Card>
     </div>
   );
 }
-
-export default Login;
+ export default  ForgotPassword;

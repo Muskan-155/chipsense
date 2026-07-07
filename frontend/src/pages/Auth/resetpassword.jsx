@@ -1,37 +1,36 @@
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Loader from "../../components/ui/Loader";
 import api from "../../services/api";
 
-function Login() {
-  const [email, setEmail] = useState("");
+function ResetPassword() {
+  const { token } = useParams();
+  const navigate = useNavigate();
+
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
-      const response = await api.post("/auth/login", {
-        email,
-        password,
-      });
-
-      console.log("Login Success:", response.data);
-
-      alert("🎉 Login Successful!");
-
-      // We'll save the JWT token tomorrow
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        error.response?.data?.message || "Login Failed!"
+      const response = await api.post(
+        `/auth/reset-password/${token}`,
+        {
+          password,
+        }
       );
+
+      alert(response.data.message || "Password reset successful!");
+
+      navigate("/");
+    } catch (error) {
+      alert(error.response?.data?.message || "Password reset failed!");
     } finally {
       setLoading(false);
     }
@@ -39,31 +38,20 @@ function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-white to-green-100 px-4">
-
       <Card className="w-full max-w-md">
-
-        <h1 className="text-4xl font-bold text-center text-purple-700">
-          Hello, Tun-Tun! 🍃
+        <h1 className="text-3xl font-bold text-center text-purple-700">
+          Reset Password
         </h1>
 
         <p className="text-center text-gray-500 mt-2 mb-8">
-          Welcome back to ChipSense
+          Enter your new password.
         </p>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-
-          <Input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
+        <form onSubmit={handleResetPassword} className="space-y-5">
           <Input
             type="password"
             name="password"
-            placeholder="Enter your password"
+            placeholder="Enter new password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -71,14 +59,12 @@ function Login() {
           {loading ? (
             <Loader />
           ) : (
-            <Button text="Login" type="submit" />
+            <Button text="Reset Password" type="submit" />
           )}
-
         </form>
-
       </Card>
     </div>
   );
 }
 
-export default Login;
+export default ResetPassword;
